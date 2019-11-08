@@ -11,26 +11,40 @@ const OrbitControls = require("three-orbit-controls")(THREE);
   mounted() {
     const el = this.$refs.scene as Element;
     this.camera = new THREE.PerspectiveCamera(
-      75,
-      el.clientWidth / el.clientHeight,
-      0.1,
-      1000
+      55,
+      window.innerWidth / window.innerHeight,
+      45,
+      30000
     );
+    this.camera.position.set(-900, -200, -900);
 
     this.renderer.setSize(el.clientWidth, el.clientHeight);
     el.appendChild(this.renderer.domElement);
 
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-
-    this.scene.add(cube);
-    this.camera.position.z = 5;
-    this.camera.position.x = 5;
-    this.camera.position.y = 5;
     var controls = new OrbitControls(this.camera);
+    controls.minDistance = 500;
+    controls.maxDistance = 1500;
 
+    let materialArray = [];
+    let texture_ft = new THREE.TextureLoader().load("./elyvisions/rainbow_ft.png");
+    let texture_bk = new THREE.TextureLoader().load("./elyvisions/rainbow_bk.png");
+    let texture_up = new THREE.TextureLoader().load("./elyvisions/rainbow_up.png");
+    let texture_dn = new THREE.TextureLoader().load("./elyvisions/rainbow_dn.png");
+    let texture_rt = new THREE.TextureLoader().load("./elyvisions/rainbow_rt.png");
+    let texture_lf = new THREE.TextureLoader().load("./elyvisions/rainbow_lf.png");
 
+    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_ft }));
+    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_bk }));
+    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_up }));
+    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_dn }));
+    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_rt }));
+    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_lf }));
+
+    for (let i = 0; i < 6; i++) materialArray[i].side = THREE.BackSide;
+
+    let skyboxGeo = new THREE.BoxGeometry(10000, 10000, 10000);
+    let skybox = new THREE.Mesh(skyboxGeo, materialArray);
+    this.scene.add(skybox);
 
     const animate = () => {
       requestAnimationFrame(animate);
