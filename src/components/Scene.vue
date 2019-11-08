@@ -6,44 +6,29 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import * as THREE from "three";
 const OrbitControls = require("three-orbit-controls")(THREE);
+import { skybox } from "./skyBox";
 
 @Component<Scene>({
   mounted() {
     const el = this.$refs.scene as Element;
+    this.width = el.clientWidth;
+    this.height = el.clientHeight;
+
     this.camera = new THREE.PerspectiveCamera(
       55,
-      window.innerWidth / window.innerHeight,
+      this.width / this.height,
       45,
       30000
     );
     this.camera.position.set(-900, -200, -900);
 
-    this.renderer.setSize(el.clientWidth, el.clientHeight);
+    this.renderer.setSize(this.width, this.height);
     el.appendChild(this.renderer.domElement);
 
     var controls = new OrbitControls(this.camera);
     controls.minDistance = 500;
     controls.maxDistance = 1500;
 
-    let materialArray = [];
-    let texture_ft = new THREE.TextureLoader().load("./elyvisions/rainbow_ft.png");
-    let texture_bk = new THREE.TextureLoader().load("./elyvisions/rainbow_bk.png");
-    let texture_up = new THREE.TextureLoader().load("./elyvisions/rainbow_up.png");
-    let texture_dn = new THREE.TextureLoader().load("./elyvisions/rainbow_dn.png");
-    let texture_rt = new THREE.TextureLoader().load("./elyvisions/rainbow_rt.png");
-    let texture_lf = new THREE.TextureLoader().load("./elyvisions/rainbow_lf.png");
-
-    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_ft }));
-    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_bk }));
-    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_up }));
-    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_dn }));
-    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_rt }));
-    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_lf }));
-
-    for (let i = 0; i < 6; i++) materialArray[i].side = THREE.BackSide;
-
-    let skyboxGeo = new THREE.BoxGeometry(10000, 10000, 10000);
-    let skybox = new THREE.Mesh(skyboxGeo, materialArray);
     this.scene.add(skybox);
 
     const animate = () => {
@@ -58,6 +43,9 @@ const OrbitControls = require("three-orbit-controls")(THREE);
   }
 })
 export default class Scene extends Vue {
+  private width: number = 0;
+  private height: number = 0;
+
   private camera!: THREE.PerspectiveCamera;
   private renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer();
   private scene: THREE.Scene = new THREE.Scene();
