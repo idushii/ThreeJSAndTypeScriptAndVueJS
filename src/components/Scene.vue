@@ -7,6 +7,8 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import * as THREE from "three";
 const OrbitControls = require("three-orbit-controls")(THREE);
 import { skybox } from "./skyBox";
+import { generateTexture } from "./generateTexture";
+import { generateHeight } from "./heightMap";
 
 @Component<Scene>({
   mounted() {
@@ -20,16 +22,48 @@ import { skybox } from "./skyBox";
       45,
       30000
     );
-    this.camera.position.set(-900, -200, -900);
+    this.camera.position.set(-1000, 5000, 5000);
 
     this.renderer.setSize(this.width, this.height);
     el.appendChild(this.renderer.domElement);
 
     var controls = new OrbitControls(this.camera);
     controls.minDistance = 500;
-    controls.maxDistance = 1500;
+    controls.maxDistance = 15000;
 
-    this.scene.add(skybox);
+    //this.scene.add(skybox);
+
+    var mesh, texture;
+    var worldWidth = 256,
+      worldDepth = 256,
+      worldHalfWidth = worldWidth / 2,
+      worldHalfDepth = worldDepth / 2;
+    var clock = new THREE.Clock();
+
+    this.scene.background = new THREE.Color(0xbfd1e5);
+
+    var data = generateHeight(worldWidth, worldDepth);
+    var geometry = new THREE.PlaneBufferGeometry(
+      7500,
+      7500,
+      worldWidth - 1,
+      worldDepth - 1
+    );
+    geometry.rotateX(-Math.PI / 2);
+    var vertices = geometry.attributes.position.array;
+    for (var i = 0, j = 0, l = vertices.length; i < l; i++, j += 3) {
+      vertices[j + 1] = data[i] * 10;
+    }
+    texture = new THREE.CanvasTexture(
+      generateTexture(data, worldWidth, worldDepth)
+    );
+    texture.wrapS = THREE.ClampToEdgeWrapping;
+    texture.wrapT = THREE.ClampToEdgeWrapping;
+    mesh = new THREE.Mesh(
+      geometry,
+      new THREE.MeshBasicMaterial({ map: texture })
+    );
+    this.scene.add(mesh);
 
     const animate = () => {
       requestAnimationFrame(animate);
