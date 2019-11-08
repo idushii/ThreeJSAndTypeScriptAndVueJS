@@ -1,4 +1,4 @@
-# 2048
+# THreeJS Project
 
 ## Project setup
 ```
