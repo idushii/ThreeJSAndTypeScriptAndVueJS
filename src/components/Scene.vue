@@ -5,7 +5,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import * as THREE from "three";
-const OrbitControls = require( 'three-orbit-controls' )( THREE );
+const OrbitControls = require("three-orbit-controls")(THREE);
 
 @Component<Scene>({
   mounted() {
@@ -26,13 +26,16 @@ const OrbitControls = require( 'three-orbit-controls' )( THREE );
 
     this.scene.add(cube);
     this.camera.position.z = 5;
+    this.camera.position.x = 5;
+    this.camera.position.y = 5;
     var controls = new OrbitControls(this.camera);
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 10;
+    controls.target = new THREE.Vector3(0.5, 0.5, 0.5);
 
     const animate = () => {
       requestAnimationFrame(animate);
 
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
       controls.update();
 
       this.renderer.render(this.scene, this.camera);
