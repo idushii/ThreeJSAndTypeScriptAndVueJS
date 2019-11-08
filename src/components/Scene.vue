@@ -29,9 +29,8 @@ const OrbitControls = require("three-orbit-controls")(THREE);
     this.camera.position.x = 5;
     this.camera.position.y = 5;
     var controls = new OrbitControls(this.camera);
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 10;
-    controls.target = new THREE.Vector3(0.5, 0.5, 0.5);
+
+
 
     const animate = () => {
       requestAnimationFrame(animate);
