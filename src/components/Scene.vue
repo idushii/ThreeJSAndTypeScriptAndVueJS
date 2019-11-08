@@ -1,10 +1,11 @@
 <template>
-  <div class="scene" ref="scene"/>
+  <div class="scene" ref="scene" />
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import * as THREE from "three";
+const OrbitControls = require( 'three-orbit-controls' )( THREE );
 
 @Component<Scene>({
   mounted() {
@@ -15,6 +16,7 @@ import * as THREE from "three";
       0.1,
       1000
     );
+
     this.renderer.setSize(el.clientWidth, el.clientHeight);
     el.appendChild(this.renderer.domElement);
 
@@ -24,12 +26,14 @@ import * as THREE from "three";
 
     this.scene.add(cube);
     this.camera.position.z = 5;
-    
+    var controls = new OrbitControls(this.camera);
+
     const animate = () => {
       requestAnimationFrame(animate);
 
       cube.rotation.x += 0.01;
       cube.rotation.y += 0.01;
+      controls.update();
 
       this.renderer.render(this.scene, this.camera);
     };
